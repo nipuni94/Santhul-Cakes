@@ -8,7 +8,7 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster } from "sonner";
 import { CartProvider } from "@/context/CartContext";
 import { StoreProvider } from "@/context/StoreContext";
-import NextTopLoader from 'nextjs-toploader';
+
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -44,7 +44,6 @@ export default function RootLayout({
       <body
         className={`${playfair.variable} ${montserrat.variable} ${greatVibes.variable} antialiased flex flex-col min-h-screen`}
       >
-        <NextTopLoader color="#E75D86" showSpinner={false} />
         <StoreProvider>
           <CartProvider>
             <Header />
