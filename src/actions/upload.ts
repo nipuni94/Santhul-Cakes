@@ -17,8 +17,16 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'];
 
 export async function uploadFile(formData: FormData) {
+    console.log("📂 Starting file upload...");
+
     // Only authenticated admins can upload
-    await ensureAdmin();
+    try {
+        await ensureAdmin();
+        console.log("✅ Admin authenticated");
+    } catch (e) {
+        console.error("❌ Auth failed:", e);
+        throw e;
+    }
 
     const file = formData.get('file') as File;
     if (!file) throw new Error('No file provided');
@@ -39,29 +47,44 @@ export async function uploadFile(formData: FormData) {
         throw new Error(`Invalid file extension: ${originalExt}`);
     }
 
-    // Upload to Netlify Blobs
-    const store = getStore({
-        name: 'images',
-        // On Netlify, authentication is handled automatically.
-        // We only provide explicit credentials if they are set (e.g. local dev).
-        ...(process.env.NETLIFY_ACCESS_TOKEN && {
-            siteID: process.env.NETLIFY_SITE_ID,
-            token: process.env.NETLIFY_ACCESS_TOKEN,
-        })
-    });
+    try {
+        // Upload to Netlify Blobs
+        console.log("🔄 Initializing Netlify Blobs store...");
+        const store = getStore({
+            name: 'images',
+            // On Netlify, authentication is handled automatically.
+            // We only provide explicit credentials if they are set (e.g. local dev).
+            ...(process.env.NETLIFY_ACCESS_TOKEN && {
+                siteID: process.env.NETLIFY_SITE_ID,
+                token: process.env.NETLIFY_ACCESS_TOKEN,
+            })
+        });
 
-    const arrayBuffer = await file.arrayBuffer();
-    // Use original name but ensuring randomness to avoid overwrites if strict
-    // But we are using a smart key strategy here
-    const key = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+        console.log("🔄 Processing file buffer...");
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
-    await store.set(key, arrayBuffer);
+        // Use original name but ensuring randomness to avoid overwrites if strict
+        // But we are using a smart key strategy here
+        const key = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
 
-    // IMPORTANT: For this to work, we need to ensure the blob store is public
-    // effectively, or we proxy it. 
-    // For now, on Netlify, standard access pattern for site-scoped blobs:
-    // https://<site_url>/.netlify/blobs/<store_name>/<key>
+        console.log(`⬆️ Uploading to store with key: ${key}`);
+        // Cast to any to bypass potential strict type mismatch with BlobInput
+        await store.set(key, buffer as any);
 
-    // We'll use a relative URL which works if deployed correctly
-    return `/.netlify/blobs/images/${key}`;
+        console.log("✅ Upload successful");
+        // For now, on Netlify, standard access pattern for site-scoped blobs:
+        // https://<site_url>/.netlify/blobs/<store_name>/<key>
+        return `/.netlify/blobs/images/${key}`;
+
+    } catch (error: any) {
+        console.error("❌ Netlify Blob Upload Error:", error);
+        // Log environment status for debugging (don't log secrets)
+        console.log("Debug Info:", {
+            hasSiteID: !!process.env.NETLIFY_SITE_ID,
+            hasToken: !!process.env.NETLIFY_ACCESS_TOKEN,
+            blobContext: !!process.env.NETLIFY_BLOBS_CONTEXT
+        });
+        throw new Error(`Upload failed: ${error.message}`);
+    }
 }
