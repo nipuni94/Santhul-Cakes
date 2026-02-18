@@ -28,6 +28,9 @@ const greatVibes = Great_Vibes({
   weight: "400",
 });
 
+
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Santhul Cake House | Premium Homemade Cakes",
   description:

@@ -127,9 +127,9 @@ export const Footer = () => {
                         <h4 className="font-serif text-lg mb-4 !text-white">Legal</h4>
                         <ul className="space-y-2">
                             {[
-                                { label: "Privacy Policy", href: "/legal/privacy-policy" },
-                                { label: "Terms of Service", href: "/legal/terms-of-service" },
-                                { label: "Refund Policy", href: "/legal/refund-policy" },
+                                { label: "Privacy Policy", href: "/legal/privacy" },
+                                { label: "Terms of Service", href: "/legal/terms" },
+                                { label: "Cookie Policy", href: "/legal/cookie-policy" },
                             ].map((link) => (
                                 <li key={link.href}>
                                     <Link
