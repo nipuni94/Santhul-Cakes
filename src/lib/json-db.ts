@@ -51,8 +51,11 @@ let pool: Pool | undefined;
 
 function getPool() {
     if (!pool) {
+        console.log("🔌 Initializing DB Pool...");
+        console.log("Debug: DATABASE_URL is " + (process.env.DATABASE_URL ? "DEFINED" : "MISSING"));
+
         if (!process.env.DATABASE_URL) {
-            console.warn("DATABASE_URL is not set. Using in-memory fallback (Changes will be lost).");
+            console.warn("⚠️ DATABASE_URL is not set. Using in-memory fallback (Changes will be lost).");
             // Return null to trigger fallback logic below
             return null;
         }
@@ -68,19 +71,24 @@ export async function getDb() {
     const dbPool = getPool();
 
     // Fallback if no DB connection
-    if (!dbPool) return INITIAL_DATA;
+    if (!dbPool) {
+        console.warn("⚠️ No DB Pool available. Returning INITIAL_DATA.");
+        return INITIAL_DATA;
+    }
 
     try {
+        console.log("🔍 Reading from Database...");
         // Query the JSON blob where id = 1
         const { rows } = await dbPool.query('SELECT data FROM store_data WHERE id = 1 LIMIT 1');
 
         let data;
 
         if (rows.length > 0) {
+            console.log("✅ Data found in DB.");
             data = rows[0].data;
         } else {
             // First time run: Initialize DB
-            console.log("Database empty. Seeding initial data...");
+            console.log("ℹ️ Database empty. Seeding initial data...");
             await saveDb(INITIAL_DATA);
             data = INITIAL_DATA;
         }
@@ -107,24 +115,28 @@ export async function getDb() {
         }
 
         if (modified) {
+            console.log("⚙️ Migrating/Updating DB structure...");
             // Silently upgrade the DB structure in background
-            // We use no await to not block the read, but catch error to avoid unhandled promise rejection
-            saveDb(data).catch(err => console.error("Auto-migration failed:", err));
+            saveDb(data).catch(err => console.error("❌ Auto-migration failed:", err));
         }
 
         return data;
 
     } catch (error) {
-        console.error("Database connection error:", error);
+        console.error("❌ Database connection error:", error);
         return INITIAL_DATA;
     }
 }
 
 export async function saveDb(data: any) {
     const dbPool = getPool();
-    if (!dbPool) return; // Fallback mode (no-op)
+    if (!dbPool) {
+        console.warn("⚠️ Cannot save: No DB connection.");
+        return;
+    }
 
     try {
+        console.log("💾 Saving to Database...");
         const queryText = `
             INSERT INTO store_data (id, data)
             VALUES (1, $1)
@@ -132,8 +144,9 @@ export async function saveDb(data: any) {
             DO UPDATE SET data = $1
         `;
         await dbPool.query(queryText, [JSON.stringify(data)]);
+        console.log("✅ Saved successfully.");
     } catch (error) {
-        console.error("Failed to save to database:", error);
+        console.error("❌ Failed to save to database:", error);
         throw new Error("Database save failed");
     }
 }
