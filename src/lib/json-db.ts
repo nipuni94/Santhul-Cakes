@@ -52,14 +52,22 @@ let pool: Pool | undefined;
 function getPool() {
     if (!pool) {
         console.log("🔌 Initializing DB Pool...");
-        const connectionString = process.env.DATABASE_URL || process.env.NETLIFY_DATABASE_URL;
+
+        // Prioritize UNPOOLED connection for serverless/Netlify to avoid transaction mode errors
+        const connectionString =
+            process.env.NETLIFY_DATABASE_URL_UNPOOLED ||
+            process.env.NETLIFY_DATABASE_URL ||
+            process.env.DATABASE_URL;
 
         console.log("Debug: Connection string found: " + (connectionString ? "YES" : "NO"));
-        if (process.env.NETLIFY_DATABASE_URL) console.log("Debug: Using NETLIFY_DATABASE_URL");
+
+        if (process.env.NETLIFY_DATABASE_URL_UNPOOLED) console.log("Debug: Using NETLIFY_DATABASE_URL_UNPOOLED");
+        else if (process.env.NETLIFY_DATABASE_URL) console.log("Debug: Using NETLIFY_DATABASE_URL");
+        else if (process.env.DATABASE_URL) console.log("Debug: Using DATABASE_URL");
 
         if (!connectionString) {
-            console.warn("⚠️ DATABASE_URL (or NETLIFY_DATABASE_URL) is not set. Using in-memory fallback (Changes will be lost).");
-            // Return null to trigger fallback logic below
+            console.warn("⚠️ NO DATABASE URL FOUND. Using in-memory fallback (Changes will be lost).");
+            console.warn("Please check Netlify Check > Environment Variables.");
             return null;
         }
         pool = new Pool({
