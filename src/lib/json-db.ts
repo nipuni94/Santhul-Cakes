@@ -1,0 +1,159 @@
+import { sql } from '@vercel/postgres';
+import { Product, Order, Category, StoreSettings, Promotion } from '@/types';
+
+// Initial Seed Data (Same as before)
+const INITIAL_DATA = {
+    products: [
+        { id: 1, name: "Classic Chocolate Fudge", description: "Rich, decadent layers of velvety Belgian chocolate ganache.", price: 3500, category: "Chocolate", categories: ["Chocolate"], image_url: "", is_featured: true },
+        { id: 2, name: "Vanilla Bean Dream", description: "Light vanilla sponge infused with Madagascar vanilla beans.", price: 3000, category: "Vanilla", categories: ["Vanilla"], image_url: "", is_featured: false },
+        { id: 3, name: "Red Velvet Royale", description: "Southern-style red velvet with a cloud of cream cheese frosting.", price: 4200, category: "Signature", categories: ["Signature"], image_url: "", is_featured: true },
+        { id: 4, name: "Tropical Mango Burst", description: "Fresh mango layers with passion fruit glaze and coconut cream.", price: 3800, category: "Fruit", categories: ["Fruit"], image_url: "", is_featured: false },
+        { id: 5, name: "Butterscotch Bliss", description: "Silky butterscotch sponge with caramel drizzle and toffee bits.", price: 3200, category: "Signature", categories: ["Signature"], image_url: "", is_featured: false },
+        { id: 6, name: "Strawberry Delight", description: "Fluffy sponge layered with fresh strawberries and Chantilly cream.", price: 3600, category: "Fruit", categories: ["Fruit"], image_url: "", is_featured: true },
+    ],
+    categories: [
+        { id: "1", name: "Chocolate", slug: "chocolate" },
+        { id: "2", name: "Vanilla", slug: "vanilla" },
+        { id: "3", name: "Fruit", slug: "fruit" },
+        { id: "4", name: "Signature", slug: "signature" },
+        { id: "5", name: "Custom", slug: "custom" },
+    ],
+    orders: [],
+    settings: {
+        storeName: "Santhul Cake House",
+        address: "123 Cake Lane, Sweet City",
+        phone: "+94 77 123 4567",
+        email: "hello@santhulcakes.com",
+        socialLinks: {
+            facebook: "https://facebook.com",
+            instagram: "https://instagram.com",
+        },
+        footerText: "Crafting sweet memories with homemade love.",
+        bankDetails: { bank: "", accountName: "", accountNumber: "", branch: "" },
+        customOrder: { flavors: ["Vanilla", "Chocolate", "Coffee", "Fruit Gateau", "Black Forest"] },
+        showcase: { heroImage: "", aboutImage: "" }
+    },
+    promotions: [],
+    messages: [],
+    reviews: [],
+    pages: [
+        { id: "1", slug: "terms", title: "Terms & Conditions", content: "Welcome to Santhul Cake House...", lastUpdated: new Date().toISOString() },
+        { id: "2", slug: "privacy", title: "Privacy Policy", content: "Your privacy is important to us...", lastUpdated: new Date().toISOString() },
+        { id: "3", slug: "cookie-policy", title: "Cookie Policy", content: "We use cookies to improve your experience...", lastUpdated: new Date().toISOString() },
+        { id: "4", slug: "faq", title: "Frequently Asked Questions", content: "Q: do you deliver?\nA: Yes...", lastUpdated: new Date().toISOString() }
+    ]
+};
+
+// --- DATABASE ACCESS ---
+
+export async function getDb() {
+    // Development fallback: if no postgres env var, warn but don't crash immediately if you want local dev without internet
+    // But for production readiness, we assume Postgres is connected.
+
+    try {
+        // Query the JSON blob where id = 1
+        const { rows } = await sql`SELECT data FROM store_data WHERE id = 1 LIMIT 1;`;
+
+        let data;
+
+        if (rows.length > 0) {
+            data = rows[0].data;
+        } else {
+            // First time run: Initialize DB
+            console.log("Database empty. Seeding initial data...");
+            await saveDb(INITIAL_DATA);
+            data = INITIAL_DATA;
+        }
+
+        // --- Data Integrity Checks (Migrations on read) ---
+        let modified = false;
+
+        if (!data.messages) { data.messages = []; modified = true; }
+        if (!data.reviews) { data.reviews = []; modified = true; }
+        if (!data.pages) { data.pages = INITIAL_DATA.pages; modified = true; }
+
+        // Ensure settings structure upgrades
+        if (!data.settings.bankDetails) {
+            data.settings.bankDetails = { bank: "", accountName: "", accountNumber: "", branch: "" };
+            modified = true;
+        }
+        if (!data.settings.customOrder) {
+            data.settings.customOrder = { flavors: ["Vanilla", "Chocolate", "Coffee", "Fruit Gateau", "Black Forest"] };
+            modified = true;
+        }
+        if (!data.settings.showcase) {
+            data.settings.showcase = { heroImage: "", aboutImage: "" };
+            modified = true;
+        }
+
+        if (modified) {
+            // Silently upgrade the DB structure in background
+            // We use no await to not block the read, but catch error to avoid unhandled promise rejection
+            saveDb(data).catch(err => console.error("Auto-migration failed:", err));
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error("Database connection error:", error);
+        // Fallback for build time or critical failure
+        // Warning: This means changes won't persist if DB is down.
+        return INITIAL_DATA;
+    }
+}
+
+export async function saveDb(data: any) {
+    try {
+        await sql`
+            INSERT INTO store_data (id, data)
+            VALUES (1, ${JSON.stringify(data)})
+            ON CONFLICT (id) 
+            DO UPDATE SET data = ${JSON.stringify(data)};
+        `;
+    } catch (error) {
+        console.error("Failed to save to database:", error);
+        throw new Error("Database save failed");
+    }
+}
+
+// --- HELPERS (Unchanged interface) ---
+
+export async function getProducts() {
+    const db = await getDb();
+    return db.products;
+}
+
+export async function getCategories() {
+    const db = await getDb();
+    return db.categories;
+}
+
+export async function getOrders() {
+    const db = await getDb();
+    return db.orders;
+}
+
+export async function getSettings() {
+    const db = await getDb();
+    return db.settings;
+}
+
+export async function getPromotions() {
+    const db = await getDb();
+    return db.promotions;
+}
+
+export async function getMessages() {
+    const db = await getDb();
+    return db.messages;
+}
+
+export async function getReviews() {
+    const db = await getDb();
+    return db.reviews;
+}
+
+export async function getPages() {
+    const db = await getDb();
+    return db.pages;
+}

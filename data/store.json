@@ -1,0 +1,247 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Classic Chocolate Fudge",
+      "description": "Rich, decadent layers of velvety Belgian chocolate ganache.",
+      "price": 5000,
+      "category": "Chocolate",
+      "categories": [
+        "Chocolate"
+      ],
+      "image_url": "",
+      "is_featured": true,
+      "variants": [
+        {
+          "name": "1 KG",
+          "price": 5000
+        },
+        {
+          "name": "1.5 KG",
+          "price": 7000
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Vanilla Bean Dream",
+      "description": "Light vanilla sponge infused with Madagascar vanilla beans.",
+      "price": 3000,
+      "category": "Vanilla",
+      "categories": [
+        "Vanilla"
+      ],
+      "image_url": "",
+      "is_featured": false
+    },
+    {
+      "id": 3,
+      "name": "Red Velvet Royale",
+      "description": "Southern-style red velvet with a cloud of cream cheese frosting.",
+      "price": 4200,
+      "category": "Signature",
+      "categories": [
+        "Signature"
+      ],
+      "image_url": "",
+      "is_featured": true
+    },
+    {
+      "id": 4,
+      "name": "Tropical Mango Burst",
+      "description": "Fresh mango layers with passion fruit glaze and coconut cream.",
+      "price": 3800,
+      "category": "Fruit",
+      "categories": [
+        "Fruit"
+      ],
+      "image_url": "",
+      "is_featured": false
+    },
+    {
+      "id": 5,
+      "name": "Butterscotch Bliss",
+      "description": "Silky butterscotch sponge with caramel drizzle and toffee bits.",
+      "price": 3200,
+      "category": "Signature",
+      "categories": [
+        "Signature"
+      ],
+      "image_url": "",
+      "is_featured": false
+    },
+    {
+      "id": 6,
+      "name": "Strawberry Delight",
+      "description": "Fluffy sponge layered with fresh strawberries and Chantilly cream.",
+      "price": 3600,
+      "category": "Fruit",
+      "categories": [
+        "Fruit"
+      ],
+      "image_url": "",
+      "is_featured": true
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "name": "Chocolate",
+      "slug": "chocolate"
+    },
+    {
+      "id": "2",
+      "name": "Vanilla",
+      "slug": "vanilla"
+    },
+    {
+      "id": "3",
+      "name": "Fruit",
+      "slug": "fruit"
+    },
+    {
+      "id": "4",
+      "name": "Signature",
+      "slug": "signature"
+    }
+  ],
+  "orders": [
+    {
+      "customer_name": "Gravity Claw",
+      "customer_phone": "+94 77 263 8168",
+      "shipping_address": "New Road, Heenatiya, Balapitya",
+      "city": "bbbbbb",
+      "items": [
+        {
+          "id": 1,
+          "name": "Classic Chocolate Fudge",
+          "description": "Rich, decadent layers of velvety Belgian chocolate ganache.",
+          "price": 5000,
+          "category": "Chocolate",
+          "categories": [
+            "Chocolate"
+          ],
+          "image_url": "",
+          "is_featured": true,
+          "variants": [
+            {
+              "name": "1 KG",
+              "price": 5000
+            },
+            {
+              "name": "1.5 KG",
+              "price": 7000
+            }
+          ],
+          "quantity": 1,
+          "cartId": "cart-1771237910797-3isku0v4l",
+          "selectedPrice": 5000
+        }
+      ],
+      "total_amount": 5000,
+      "status": "Completed",
+      "type": "Standard",
+      "delivery_date": "2026-03-14",
+      "notes": "",
+      "id": "ORD-947020",
+      "date": "2026-02-16T10:32:27.020Z"
+    }
+  ],
+  "settings": {
+    "storeName": "Santhul Cake House",
+    "address": "123 Cake Lane, Sweet City",
+    "phone": "+94 77 123 4567",
+    "email": "hello@santhulcakes.com",
+    "socialLinks": {
+      "facebook": "https://facebook.com",
+      "instagram": "https://instagram.com"
+    },
+    "footerText": "Crafting sweet memories with homemade love.",
+    "locations": [
+      {
+        "id": "1",
+        "name": "Main Branch",
+        "address": "123 Cake Lane, Sweet City",
+        "phone": "+94 77 123 4567"
+      },
+      {
+        "id": "1771240379550",
+        "name": "Panadura",
+        "address": "Shanthi MW, Atambagoda",
+        "phone": "+94 77 263 8168"
+      }
+    ],
+    "servingCities": [
+      "Ambalangoda",
+      "Balapitiya",
+      "Panadura"
+    ]
+  },
+  "promotions": [
+    {
+      "code": "Val10",
+      "value": 10,
+      "description": "Valentines Discount ",
+      "discountType": "percentage",
+      "isActive": true,
+      "id": "1771240642029"
+    }
+  ],
+  "messages": [
+    {
+      "name": "Gravity Claw",
+      "phone": "+94 77 263 8168",
+      "subject": "der",
+      "message": "fwff",
+      "type": "Contact",
+      "id": 1771255123773,
+      "date": "2026-02-16T15:18:43.773Z",
+      "read": false
+    },
+    {
+      "name": "Gravity Claw",
+      "phone": "+94 77 263 8168",
+      "subject": "Custom Order: dv...",
+      "message": "Flavor: Vanilla\nSize: 1 kg (Serves 6-8)\nTheme: dv\nWording: \nCity: vacasa",
+      "type": "CustomOrder",
+      "deliveryDate": "2026-02-27",
+      "flavor": "Vanilla",
+      "weight": "1 kg (Serves 6-8)",
+      "theme": "dv",
+      "city": "vacasa",
+      "id": 1771239931616,
+      "date": "2026-02-16T11:05:31.616Z",
+      "read": true
+    }
+  ],
+  "pages": [
+    {
+      "id": "1",
+      "slug": "privacy-policy",
+      "title": "Privacy Policy",
+      "content": "## Privacy Policy\n\n**Last Updated: February 2026**\n\nAt Santhul Cake House, we are committed to maintaining the trust and confidence of our visitors to our web site. In particular, we want you to know that Santhul Cake House is not in the business of selling, renting or trading email lists with other companies and businesses for marketing purposes.\n\n### Collection and Use of Personal Information\n\nWe collect personal information when you place an order, including your name, address, email address, and phone number. We use this information to:\n- Process and fulfill your order.\n- Communicate with you regarding your order status.\n- Send you updates and promotional offers (only if you opt-in).\n\n### Cookies\n\nWe use cookies to ensure that we give you the best experience on our website. If you continue to use this site we will assume that you are happy with it.\n\n### Security\n\nWe take precautions to protect your information. When you submit sensitive information via the website, your information is protected both online and offline.",
+      "lastUpdated": "2026-02-17T11:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "slug": "terms-of-service",
+      "title": "Terms of Service",
+      "content": "## Terms of Service\n\n**Last Updated: February 2026**\n\nWelcome to Santhul Cake House. By accessing or using our website and services, you agree to be bound by complying with and being bound by the following terms and conditions of use.\n\n### Ordering\n\n- All orders are subject to acceptance and availability.\n- We reserve the right to refuse service to anyone for any reason at any time.\n- Custom orders require a minimum notice period of 3-7 days depending on complexity.\n\n### Pricing and Payment\n\n- Prices for our products are subject to change without notice.\n- Payment is required upon placement of order or upon delivery as specified at checkout.\n\n### Allergens\n\nOur products may contain or come into contact with milk, wheat, nuts, soy, and other allergens. You agree to notify your guests of this risk and hold us harmless for allergic reactions.",
+      "lastUpdated": "2026-02-17T11:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "slug": "refund-policy",
+      "title": "Refund Policy",
+      "content": "## Refund Policy\n\n**Last Updated: February 2026**\n\nDue to the perishable nature of our products, we have a strict refund policy.\n\n### Returns\n\nWe do not accept returns on any food items. If you are unsatisfied with your order, please contact us immediately upon delivery.\n\n### Refunds\n\nRefunds or replacements are offered only in the following cases:\n- The wrong item was delivered.\n- The item arrived damaged (proof required).\n- The quality of the cake was compromised (proof required).\n\n### Cancellations\n\n- Standard Orders: Must be cancelled at least 24 hours before the scheduled delivery time for a full refund.\n- Custom Orders: Must be cancelled at least 48 hours in advance. Deposits for custom work may be non-refundable.",
+      "lastUpdated": "2026-02-17T11:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "slug": "faq",
+      "title": "Frequently Asked Questions",
+      "content": "## Frequently Asked Questions\n\n### Ordering & Delivery\n\n**Q: What areas do you deliver to?**\n\nA: We currently serve Ambalangoda, Balapitiya, and Panadura areas. Delivery fees may vary based on your specific location.\n\n**Q: How far in advance should I order?**\n\nA: For standard cakes, we recommend ordering at least 24 hours in advance. For custom wedding or birthday cakes, please order 3-7 days ahead to ensure availability.\n\n**Q: Do you offer same-day delivery?**\n\nA: Subject to availability. Please call us directly at +94 77 123 4567 to check for same-day options.\n\n### Products\n\n**Q: Are your cakes eggless?**\n\nA: We have eggless options available for most of our flavors. Please verify on the product page or request it in the notes.\n\n**Q: Can I customize the sugar level?**\n\nA: Yes! For custom orders, we can adjust sweetness levels. Please mention this requirement when placing your inquiry.",
+      "lastUpdated": "2026-02-17T11:00:00.000Z"
+    }
+  ]
+}
