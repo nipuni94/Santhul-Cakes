@@ -52,15 +52,18 @@ let pool: Pool | undefined;
 function getPool() {
     if (!pool) {
         console.log("🔌 Initializing DB Pool...");
-        console.log("Debug: DATABASE_URL is " + (process.env.DATABASE_URL ? "DEFINED" : "MISSING"));
+        const connectionString = process.env.DATABASE_URL || process.env.NETLIFY_DATABASE_URL;
 
-        if (!process.env.DATABASE_URL) {
-            console.warn("⚠️ DATABASE_URL is not set. Using in-memory fallback (Changes will be lost).");
+        console.log("Debug: Connection string found: " + (connectionString ? "YES" : "NO"));
+        if (process.env.NETLIFY_DATABASE_URL) console.log("Debug: Using NETLIFY_DATABASE_URL");
+
+        if (!connectionString) {
+            console.warn("⚠️ DATABASE_URL (or NETLIFY_DATABASE_URL) is not set. Using in-memory fallback (Changes will be lost).");
             // Return null to trigger fallback logic below
             return null;
         }
         pool = new Pool({
-            connectionString: process.env.DATABASE_URL,
+            connectionString: connectionString,
             ssl: { rejectUnauthorized: false } // Required for Neon
         });
     }
