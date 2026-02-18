@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { Pool } from 'pg';
 import { Product, Order, Category, StoreSettings, Promotion } from '@/types';
 
 // Initial Seed Data (Same as before)
@@ -46,13 +46,33 @@ const INITIAL_DATA = {
 
 // --- DATABASE ACCESS ---
 
+// Use a singleton pool to separate connection logic
+let pool: Pool | undefined;
+
+function getPool() {
+    if (!pool) {
+        if (!process.env.DATABASE_URL) {
+            console.warn("DATABASE_URL is not set. Using in-memory fallback (Changes will be lost).");
+            // Return null to trigger fallback logic below
+            return null;
+        }
+        pool = new Pool({
+            connectionString: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false } // Required for Neon
+        });
+    }
+    return pool;
+}
+
 export async function getDb() {
-    // Development fallback: if no postgres env var, warn but don't crash immediately if you want local dev without internet
-    // But for production readiness, we assume Postgres is connected.
+    const dbPool = getPool();
+
+    // Fallback if no DB connection
+    if (!dbPool) return INITIAL_DATA;
 
     try {
         // Query the JSON blob where id = 1
-        const { rows } = await sql`SELECT data FROM store_data WHERE id = 1 LIMIT 1;`;
+        const { rows } = await dbPool.query('SELECT data FROM store_data WHERE id = 1 LIMIT 1');
 
         let data;
 
@@ -96,20 +116,22 @@ export async function getDb() {
 
     } catch (error) {
         console.error("Database connection error:", error);
-        // Fallback for build time or critical failure
-        // Warning: This means changes won't persist if DB is down.
         return INITIAL_DATA;
     }
 }
 
 export async function saveDb(data: any) {
+    const dbPool = getPool();
+    if (!dbPool) return; // Fallback mode (no-op)
+
     try {
-        await sql`
+        const queryText = `
             INSERT INTO store_data (id, data)
-            VALUES (1, ${JSON.stringify(data)})
+            VALUES (1, $1)
             ON CONFLICT (id) 
-            DO UPDATE SET data = ${JSON.stringify(data)};
+            DO UPDATE SET data = $1
         `;
+        await dbPool.query(queryText, [JSON.stringify(data)]);
     } catch (error) {
         console.error("Failed to save to database:", error);
         throw new Error("Database save failed");

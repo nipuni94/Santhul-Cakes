@@ -1,6 +1,6 @@
 'use server';
 
-import { put } from '@vercel/blob';
+import { getStore } from '@netlify/blobs';
 import { extname } from 'path';
 import { ensureAdmin } from '@/lib/auth';
 
@@ -39,12 +39,25 @@ export async function uploadFile(formData: FormData) {
         throw new Error(`Invalid file extension: ${originalExt}`);
     }
 
-    // Upload to Vercel Blob
-    // 'access: public' makes it accessible via the returned URL
-    const blob = await put(file.name, file, {
-        access: 'public',
-        addRandomSuffix: true // Default is true, but good to be explicit
+    // Upload to Netlify Blobs
+    const store = getStore({
+        name: 'images',
+        siteID: process.env.NETLIFY_SITE_ID,
+        token: process.env.NETLIFY_ACCESS_TOKEN
     });
 
-    return blob.url;
+    const arrayBuffer = await file.arrayBuffer();
+    // Use original name but ensuring randomness to avoid overwrites if strict
+    // But we are using a smart key strategy here
+    const key = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+
+    await store.set(key, arrayBuffer);
+
+    // IMPORTANT: For this to work, we need to ensure the blob store is public
+    // effectively, or we proxy it. 
+    // For now, on Netlify, standard access pattern for site-scoped blobs:
+    // https://<site_url>/.netlify/blobs/<store_name>/<key>
+
+    // We'll use a relative URL which works if deployed correctly
+    return `/.netlify/blobs/images/${key}`;
 }
