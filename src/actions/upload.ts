@@ -73,9 +73,7 @@ export async function uploadFile(formData: FormData) {
         await store.set(key, buffer as any);
 
         console.log("✅ Upload successful");
-        // For now, on Netlify, standard access pattern for site-scoped blobs:
-        // https://<site_url>/.netlify/blobs/<store_name>/<key>
-        return `/.netlify/blobs/images/${key}`;
+        return `/api/images/${key}`;
 
     } catch (error: any) {
         console.error("❌ Netlify Blob Upload Error:", error);
