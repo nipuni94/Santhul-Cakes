@@ -27,8 +27,7 @@ export default async function DebugPage() {
             categories: db.categories?.length || 0,
             orders: db.orders?.length || 0,
             reviews: db.reviews?.length || 0,
-            pages: db.pages?.length || 0,
-            isUsingInitialData: db === (await import("@/lib/json-db")).default // loose check
+            pages: db.pages?.length || 0
         };
     } catch (e: any) {
         dbStatus = "Failed ❌";
