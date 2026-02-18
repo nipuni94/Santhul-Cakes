@@ -43,6 +43,7 @@ export async function GET(
             'gif': 'image/gif',
             'webp': 'image/webp',
             'svg': 'image/svg+xml',
+            'webm': 'video/webm',
         };
         const contentType = mimeTypes[ext || ''] || blob.type || 'application/octet-stream';
 

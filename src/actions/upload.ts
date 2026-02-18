@@ -10,11 +10,12 @@ const ALLOWED_MIME_TYPES = [
     'image/webp',
     'image/gif',
     'image/avif',
+    'video/webm',
 ];
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
-const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'];
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif', '.webm'];
 
 export async function uploadFile(formData: FormData) {
     console.log("📂 Starting file upload...");

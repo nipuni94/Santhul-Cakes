@@ -41,13 +41,19 @@ const settingsSchema = Yup.object().shape({
 });
 
 const ImageUploader = ({ fieldName, label, value, setFieldValue }: { fieldName: string, label: string, value: string, setFieldValue: (field: string, value: any) => void }) => {
+    const isVideo = value?.endsWith('.webm');
+
     return (
         <div>
             <label className="block text-xs font-semibold text-navy mb-2 uppercase tracking-wide">{label}</label>
             <div className="flex items-start gap-4">
                 <div className="relative w-32 h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 shrink-0">
                     {value ? (
-                        <Image src={value} alt={label} fill className="object-cover" />
+                        isVideo ? (
+                            <video src={value} className="w-full h-full object-cover" autoPlay loop muted playsInline />
+                        ) : (
+                            <Image src={value} alt={label} fill className="object-cover" />
+                        )
                     ) : (
                         <div className="flex items-center justify-center h-full text-gray-300">
                             <ImageIcon className="w-8 h-8" />
@@ -57,10 +63,10 @@ const ImageUploader = ({ fieldName, label, value, setFieldValue }: { fieldName: 
                 <div className="flex-1">
                     <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                         <Upload className="w-4 h-4" />
-                        <span>Upload Image</span>
+                        <span>Upload Media</span>
                         <input
                             type="file"
-                            accept="image/*"
+                            accept="image/*,video/webm"
                             className="hidden"
                             onChange={async (e) => {
                                 const file = e.target.files?.[0];
@@ -72,7 +78,7 @@ const ImageUploader = ({ fieldName, label, value, setFieldValue }: { fieldName: 
                                         const url = await uploadFile(formData);
                                         setFieldValue(fieldName, url);
                                         toast.dismiss(toastId);
-                                        toast.success("Image uploaded!");
+                                        toast.success("Upload successful!");
                                     } catch (error) {
                                         toast.error("Upload failed");
                                         console.error(error);
@@ -81,14 +87,14 @@ const ImageUploader = ({ fieldName, label, value, setFieldValue }: { fieldName: 
                             }}
                         />
                     </label>
-                    <p className="text-[10px] text-muted mt-2">Recommended size: 1920x1080px (Hero) or 800x600px (Content)</p>
+                    <p className="text-[10px] text-muted mt-2">Images: JPG, PNG, WebP. Video: WebM (Hero only, max 50MB).</p>
                     {value && (
                         <button
                             type="button"
                             onClick={() => setFieldValue(fieldName, "")}
                             className="text-xs text-red-500 hover:underline mt-1 block"
                         >
-                            Remove Image
+                            Remove
                         </button>
                     )}
                 </div>

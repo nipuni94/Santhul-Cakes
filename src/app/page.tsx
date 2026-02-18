@@ -77,13 +77,24 @@ export default function Home() {
             <div className="absolute w-80 h-80 md:w-[420px] md:h-[420px] rounded-full bg-gradient-to-br from-pink/30 to-pink-glow/40 blur-2xl animate-float" />
             <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-full border-[6px] border-white shadow-2xl overflow-hidden bg-white flex items-center justify-center">
               <div className="relative w-full h-full">
-                <Image
-                  src={settings?.showcase?.heroImage || "/logo.png"}
-                  alt="Santhul Cake House"
-                  fill
-                  className={settings?.showcase?.heroImage ? "object-cover" : "object-cover p-8"}
-                  priority
-                />
+                {settings?.showcase?.heroImage?.endsWith('.webm') ? (
+                  <video
+                    src={settings.showcase.heroImage}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <Image
+                    src={settings?.showcase?.heroImage || "/logo.png"}
+                    alt="Santhul Cake House"
+                    fill
+                    className={settings?.showcase?.heroImage ? "object-cover" : "object-cover p-8"}
+                    priority
+                  />
+                )}
               </div>
             </div>
           </motion.div>
@@ -130,7 +141,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
-                className="group card-glow bg-gradient-to-br rounded-2xl p-8 border border-pink/5"
+                className="group card-glow bg-gradient-to-br rounded-2xl p-8 border border-pink/15 shadow-[0_4px_20px_-2px_rgba(231,93,134,0.1)] hover:shadow-[0_8px_30px_-2px_rgba(231,93,134,0.2)]"
                 style={{
                   backgroundImage: `linear-gradient(to bottom right, ${item
                     .color.split(" ")[0]
