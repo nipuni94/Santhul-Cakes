@@ -18,7 +18,8 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+export default function ProductDetailPage(props: { params: Promise<{ id: string }> }) {
+    const params = use(props.params);
     const id = Number(params.id);
     const { products, categories, isLoading } = useStore(); // Check if isLoading exists in StoreContext
     const { addItem } = useCart(); // addToCart is actually addItem in CartContext
