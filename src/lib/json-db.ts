@@ -99,22 +99,31 @@ export async function getDb() {
         // --- Data Integrity Checks (Migrations on read) ---
         let modified = false;
 
+        // CRITICAL: Hydrate core data if missing (e.g. if DB was initialized with empty JSON '{}')
+        if (!data.products) { console.log("⚠️ Missing products. Seeding..."); data.products = INITIAL_DATA.products; modified = true; }
+        if (!data.categories) { console.log("⚠️ Missing categories. Seeding..."); data.categories = INITIAL_DATA.categories; modified = true; }
+        if (!data.settings) { console.log("⚠️ Missing settings. Seeding..."); data.settings = INITIAL_DATA.settings; modified = true; }
+        if (!data.orders) { data.orders = []; modified = true; }
+        if (!data.promotions) { data.promotions = []; modified = true; }
+
         if (!data.messages) { data.messages = []; modified = true; }
         if (!data.reviews) { data.reviews = []; modified = true; }
         if (!data.pages) { data.pages = INITIAL_DATA.pages; modified = true; }
 
-        // Ensure settings structure upgrades
-        if (!data.settings.bankDetails) {
-            data.settings.bankDetails = { bank: "", accountName: "", accountNumber: "", branch: "" };
-            modified = true;
-        }
-        if (!data.settings.customOrder) {
-            data.settings.customOrder = { flavors: ["Vanilla", "Chocolate", "Coffee", "Fruit Gateau", "Black Forest"] };
-            modified = true;
-        }
-        if (!data.settings.showcase) {
-            data.settings.showcase = { heroImage: "", aboutImage: "" };
-            modified = true;
+        // Ensure settings structure upgrades (only if settings exist)
+        if (data.settings) {
+            if (!data.settings.bankDetails) {
+                data.settings.bankDetails = { bank: "", accountName: "", accountNumber: "", branch: "" };
+                modified = true;
+            }
+            if (!data.settings.customOrder) {
+                data.settings.customOrder = { flavors: ["Vanilla", "Chocolate", "Coffee", "Fruit Gateau", "Black Forest"] };
+                modified = true;
+            }
+            if (!data.settings.showcase) {
+                data.settings.showcase = { heroImage: "", aboutImage: "" };
+                modified = true;
+            }
         }
 
         if (modified) {
