@@ -42,8 +42,12 @@ export async function uploadFile(formData: FormData) {
     // Upload to Netlify Blobs
     const store = getStore({
         name: 'images',
-        siteID: process.env.NETLIFY_SITE_ID,
-        token: process.env.NETLIFY_ACCESS_TOKEN
+        // On Netlify, authentication is handled automatically.
+        // We only provide explicit credentials if they are set (e.g. local dev).
+        ...(process.env.NETLIFY_ACCESS_TOKEN && {
+            siteID: process.env.NETLIFY_SITE_ID,
+            token: process.env.NETLIFY_ACCESS_TOKEN,
+        })
     });
 
     const arrayBuffer = await file.arrayBuffer();
