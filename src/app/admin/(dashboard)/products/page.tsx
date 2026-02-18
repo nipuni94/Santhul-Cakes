@@ -42,7 +42,7 @@ export default function AdminProductsPage() {
         const productData = {
             ...values,
             category: primaryCategory,
-            image_url: editingProduct?.image_url || "",
+            image_url: values.image_url,
             is_featured: values.is_featured,
         };
 

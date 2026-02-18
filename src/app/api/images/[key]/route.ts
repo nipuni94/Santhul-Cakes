@@ -33,11 +33,22 @@ export async function GET(
             return new NextResponse("Image not found", { status: 404 });
         }
 
-        console.log(`✅ API: Found blob for key: ${key}, Type: ${blob.type}, Size: ${blob.size}`);
+        console.log(`✅ API: Found blob for key: ${key}, Size: ${blob.size}`);
+
+        const ext = key.split('.').pop()?.toLowerCase();
+        const mimeTypes: Record<string, string> = {
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'png': 'image/png',
+            'gif': 'image/gif',
+            'webp': 'image/webp',
+            'svg': 'image/svg+xml',
+        };
+        const contentType = mimeTypes[ext || ''] || blob.type || 'application/octet-stream';
 
         return new NextResponse(blob as any, {
             headers: {
-                'Content-Type': blob.type || 'application/octet-stream',
+                'Content-Type': contentType,
                 'Cache-Control': 'public, max-age=31536000, immutable',
             },
         });
