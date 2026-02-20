@@ -14,20 +14,20 @@ import { Upload } from "lucide-react";
 import { toast } from "sonner";
 
 const productSchema = Yup.object().shape({
-    name: Yup.string().required("Required"),
-    price: Yup.number().positive("Must be positive").required("Required"),
-    description: Yup.string().required("Required"),
-    categories: Yup.array().of(Yup.string()).min(1, "Select at least one category"),
+    name: Yup.string(),
+    price: Yup.number().positive("Must be positive"),
+    description: Yup.string(),
+    categories: Yup.array().of(Yup.string()),
     variants: Yup.array().of(
         Yup.object().shape({
-            name: Yup.string().required("Required"),
-            price: Yup.number().positive("Must be positive").required("Required"),
+            name: Yup.string(),
+            price: Yup.number().min(0, "Must be non-negative"),
         })
     ),
     flavors: Yup.array().of(
         Yup.object().shape({
-            name: Yup.string().required("Required"),
-            price: Yup.number().min(0, "Must be positive").required("Required"),
+            name: Yup.string(),
+            price: Yup.number().min(0, "Must be non-negative"),
         })
     ),
 });
@@ -39,10 +39,12 @@ export default function AdminProductsPage() {
 
     const handleSubmit = (values: any, { resetForm }: any) => {
         const primaryCategory = values.categories[0];
+        const imageUrls = values.image_urls || [];
         const productData = {
             ...values,
             category: primaryCategory,
-            image_url: values.image_url,
+            image_url: imageUrls[0] || values.image_url || "",
+            image_urls: imageUrls,
             is_featured: values.is_featured,
         };
 
@@ -194,6 +196,7 @@ export default function AdminProductsPage() {
                                 flavors: editingProduct?.flavors || [],
                                 is_featured: editingProduct?.is_featured || false,
                                 image_url: editingProduct?.image_url || "",
+                                image_urls: editingProduct?.image_urls || (editingProduct?.image_url ? [editingProduct.image_url] : []),
                             }}
                             validationSchema={productSchema}
                             onSubmit={handleSubmit}
@@ -207,47 +210,60 @@ export default function AdminProductsPage() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-semibold text-navy mb-1">Product Image</label>
-                                        <div className="flex items-center gap-4">
-                                            <div className="relative w-24 h-24 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                                                {values.image_url ? (
-                                                    <Image src={values.image_url} alt="Preview" fill className="object-cover" />
-                                                ) : (
-                                                    <div className="flex items-center justify-center h-full text-gray-300">
-                                                        <ImageIcon className="w-8 h-8" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="relative">
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={async (e) => {
-                                                            const file = e.target.files?.[0];
-                                                            if (file) {
-                                                                const formData = new FormData();
-                                                                formData.append('file', file);
-                                                                try {
-                                                                    const toastId = toast.loading("Uploading...");
-                                                                    const url = await uploadFile(formData);
-                                                                    setFieldValue('image_url', url);
-                                                                    toast.dismiss(toastId);
-                                                                    toast.success("Image uploaded!");
-                                                                } catch (error) {
-                                                                    toast.error("Upload failed");
-                                                                    console.error(error);
-                                                                }
-                                                            }
+                                        <label className="block text-xs font-semibold text-navy mb-1">Product Images</label>
+                                        {/* Thumbnail Strip */}
+                                        <div className="flex flex-wrap gap-2 mb-3">
+                                            {(values.image_urls || []).map((url: string, index: number) => (
+                                                <div key={index} className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 group">
+                                                    <Image src={url} alt={`Image ${index + 1}`} fill className="object-cover" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const updated = values.image_urls.filter((_: string, i: number) => i !== index);
+                                                            setFieldValue('image_urls', updated);
+                                                            setFieldValue('image_url', updated[0] || '');
                                                         }}
-                                                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink hover:file:bg-pink-100"
-                                                    />
+                                                        className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                    {index === 0 && (
+                                                        <span className="absolute bottom-0 left-0 right-0 bg-pink/80 text-white text-[8px] text-center py-0.5">Main</span>
+                                                    )}
                                                 </div>
-                                                <p className="text-[10px] text-muted mt-1">Leave empty to keep existing image (if editing).</p>
-                                                <Field name="image_url" type="hidden" />
-                                                <ErrorMessage name="image_url" component="div" className="text-red-500 text-xs mt-1" />
-                                            </div>
+                                            ))}
+                                            {/* Add Image Button */}
+                                            <label className="w-20 h-20 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-pink hover:bg-pink-50 transition-colors">
+                                                <Upload className="w-5 h-5 text-gray-400" />
+                                                <span className="text-[9px] text-gray-400 mt-1">Add</span>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            const formData = new FormData();
+                                                            formData.append('file', file);
+                                                            try {
+                                                                const toastId = toast.loading("Uploading...");
+                                                                const url = await uploadFile(formData);
+                                                                const currentUrls = values.image_urls || [];
+                                                                setFieldValue('image_urls', [...currentUrls, url]);
+                                                                if (currentUrls.length === 0) setFieldValue('image_url', url);
+                                                                toast.dismiss(toastId);
+                                                                toast.success("Image uploaded!");
+                                                            } catch (error) {
+                                                                toast.error("Upload failed");
+                                                                console.error(error);
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
                                         </div>
+                                        <p className="text-[10px] text-muted">First image is used as the main product image. Click × to remove.</p>
+                                        <Field name="image_url" type="hidden" />
                                     </div>
 
                                     <div>

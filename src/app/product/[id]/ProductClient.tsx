@@ -13,6 +13,7 @@ import { ProductDetailSkeleton } from "@/components/Skeletons";
 import { RelatedProducts } from "@/components/RelatedProducts";
 import { ProductReviews } from "@/components/ProductReviews";
 import { fetchReviews } from "@/actions/fetchReviews";
+import DescriptionAccordion from "@/components/DescriptionAccordion";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -30,6 +31,7 @@ export default function ProductClient({ initialProductId }: ProductClientProps) 
     const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
     const [selectedFlavor, setSelectedFlavor] = useState<ProductFlavor | null>(null);
     const [reviews, setReviews] = useState<Review[]>([]);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     useEffect(() => {
         const loadReviews = async () => {
@@ -104,19 +106,44 @@ export default function ProductClient({ initialProductId }: ProductClientProps) 
                 ]} />
 
                 <div className="grid lg:grid-cols-2 gap-16 items-start">
-                    {/* Image */}
-                    <div className="relative aspect-square bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
-                        {product.image_url ? (
-                            <Image src={product.image_url} alt={product.name} fill className="object-cover" />
-                        ) : (
-                            <div className="absolute inset-0 shimmer flex items-center justify-center">
-                                <span className="relative z-10 font-script text-5xl text-pink/30">Santhul</span>
+                    {/* Image Gallery */}
+                    <div className="space-y-3">
+                        <div className="relative aspect-square bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+                            {(() => {
+                                const allImages = (product.image_urls && product.image_urls.length > 0) ? product.image_urls : (product.image_url ? [product.image_url] : []);
+                                const currentImage = allImages[selectedImageIndex] || allImages[0];
+                                return currentImage ? (
+                                    <Image src={currentImage} alt={product.name} fill className="object-cover" />
+                                ) : (
+                                    <div className="absolute inset-0 shimmer flex items-center justify-center">
+                                        <span className="relative z-10 font-script text-5xl text-pink/30">Santhul</span>
+                                    </div>
+                                );
+                            })()}
+                            {product.is_featured && (
+                                <span className="absolute top-4 left-4 bg-gradient-to-r from-pink to-pink-dark text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md uppercase tracking-wider">
+                                    Best Seller
+                                </span>
+                            )}
+                        </div>
+                        {/* Thumbnail Strip */}
+                        {((product.image_urls && product.image_urls.length > 1)) && (
+                            <div className="flex gap-2 justify-center">
+                                {product.image_urls.map((url, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => setSelectedImageIndex(index)}
+                                        className={cn(
+                                            "relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all",
+                                            selectedImageIndex === index
+                                                ? "border-pink shadow-md shadow-pink/20"
+                                                : "border-gray-200 hover:border-pink/50 opacity-70 hover:opacity-100"
+                                        )}
+                                    >
+                                        <Image src={url} alt={`${product.name} ${index + 1}`} fill className="object-cover" />
+                                    </button>
+                                ))}
                             </div>
-                        )}
-                        {product.is_featured && (
-                            <span className="absolute top-4 left-4 bg-gradient-to-r from-pink to-pink-dark text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md uppercase tracking-wider">
-                                Best Seller
-                            </span>
                         )}
                     </div>
 
@@ -136,9 +163,10 @@ export default function ProductClient({ initialProductId }: ProductClientProps) 
                             </div>
                         </div>
 
-                        <p className="text-muted leading-relaxed text-base">
-                            {product.description}
-                        </p>
+                        {/* Description Accordion */}
+                        {product.description && (
+                            <DescriptionAccordion description={product.description} />
+                        )}
 
                         {/* Variants */}
                         {product.variants && product.variants.length > 0 && (

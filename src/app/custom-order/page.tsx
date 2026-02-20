@@ -203,7 +203,7 @@ export default function CustomOrderPage() {
 
                                         {currentStep === 1 && (
                                             <div className="space-y-3">
-                                                {["1 kg (Serves 6-8)", "2 kg (Serves 12-16)", "3 kg (Serves 20+)"].map((s) => (
+                                                {(settings?.customOrder?.sizes || ["1 kg (Serves 6-8)", "2 kg (Serves 12-16)", "3 kg (Serves 20+)"]).map((s) => (
                                                     <label
                                                         key={s}
                                                         className={cn(

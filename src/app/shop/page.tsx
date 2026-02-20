@@ -125,7 +125,7 @@ function ShopContent() {
         );
     }
 
-    const topCategories = ["All Products", ...categories.map(c => c.name).filter(c => !["Custom", "Custom Order"].includes(c)), "New Arrivals"].slice(0, 8); // Limit to fit
+    const topCategories = ["All Products", ...categories.map(c => c.name).filter(c => !["Custom", "Custom Order"].includes(c)), "New Arrivals"];
 
     return (
         <div className="min-h-screen bg-feather">
@@ -165,8 +165,8 @@ function ShopContent() {
                         {/* Toolbar Row - Modified to include categories on left */}
                         <div className="flex flex-col lg:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
                             {/* Categories (Left Side) */}
-                            <div className="w-full lg:w-auto overflow-x-auto no-scrollbar py-4">
-                                <div className="flex items-center gap-2 px-1">
+                            <div className="w-full lg:w-auto py-2">
+                                <div className="flex flex-wrap items-center gap-2 px-1">
                                     {topCategories.map((cat) => (
                                         <button
                                             key={cat}

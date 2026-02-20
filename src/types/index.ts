@@ -18,6 +18,7 @@ export interface Product {
     variants?: ProductVariant[]; // New: Multiple sizes/prices
     flavors?: ProductFlavor[]; // New: Multiple base types
     image_url: string;
+    image_urls?: string[]; // Multiple images support
     is_featured: boolean;
 }
 
@@ -77,7 +78,11 @@ export interface StoreSettings {
     // Custom Order Configuration
     customOrder?: {
         flavors: string[];
+        sizes: string[];
     };
+
+    // Image Library (reusable uploaded images)
+    imageLibrary?: string[];
 
     // Showcase Images
     showcase?: {

@@ -5,7 +5,7 @@ import { useStore } from "@/context/StoreContext";
 import { Button } from "@/components/ui/Button";
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import * as Yup from "yup";
-import { Save, Plus, Trash2, MapPin, Building, CreditCard, Cake, Image as ImageIcon, Upload } from "lucide-react";
+import { Save, Plus, Trash2, MapPin, Building, CreditCard, Cake, Ruler, Image as ImageIcon, Upload } from "lucide-react";
 import Image from "next/image";
 import { uploadFile } from "@/actions/upload";
 import { toast } from "sonner";
@@ -13,26 +13,26 @@ import { cn } from "@/lib/utils";
 
 // Schema handling nested arrays
 const settingsSchema = Yup.object().shape({
-    storeName: Yup.string().required("Required"),
-    email: Yup.string().email("Invalid email").required("Required"),
-    footerText: Yup.string().required("Required"),
+    storeName: Yup.string(),
+    email: Yup.string().email("Invalid email"),
+    footerText: Yup.string(),
     locations: Yup.array().of(
         Yup.object().shape({
-            name: Yup.string().required("Required"),
-            address: Yup.string().required("Required"),
-            phone: Yup.string().required("Required"),
+            name: Yup.string(),
+            address: Yup.string(),
+            phone: Yup.string(),
         })
     ),
-    servingCities: Yup.array().of(Yup.string().required("Required")),
-    // New fields
+    servingCities: Yup.array().of(Yup.string()),
     bankDetails: Yup.object().shape({
-        bank: Yup.string().required("Bank Name Required"),
-        accountName: Yup.string().required("Account Name Required"),
-        accountNumber: Yup.string().required("Account Number Required"),
-        branch: Yup.string().required("Branch Required"),
+        bank: Yup.string(),
+        accountName: Yup.string(),
+        accountNumber: Yup.string(),
+        branch: Yup.string(),
     }),
     customOrder: Yup.object().shape({
-        flavors: Yup.array().of(Yup.string().required("Required")).min(1, "At least one flavor required"),
+        flavors: Yup.array().of(Yup.string()),
+        sizes: Yup.array().of(Yup.string()),
     }),
     showcase: Yup.object().shape({
         heroImage: Yup.string().nullable(),
@@ -136,7 +136,7 @@ export default function AdminSettingsPage() {
                         ],
                         servingCities: settings.servingCities || ["Colombo", "Dehiwala", "Mount Lavinia"],
                         bankDetails: settings.bankDetails || { bank: "", accountName: "", accountNumber: "", branch: "" },
-                        customOrder: settings.customOrder || { flavors: ["Vanilla", "Chocolate"] },
+                        customOrder: settings.customOrder || { flavors: ["Vanilla", "Chocolate"], sizes: ["1 kg (Serves 6-8)", "2 kg (Serves 12-16)", "3 kg (Serves 20+)"] },
                         showcase: settings.showcase || { heroImage: "", aboutImage: "" },
                     }}
                     validationSchema={settingsSchema}
@@ -249,6 +249,43 @@ export default function AdminSettingsPage() {
                                                     onClick={() => push("New Flavor")}
                                                 >
                                                     <Plus className="w-4 h-4 mr-2" /> Add Flavor
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </FieldArray>
+                                </div>
+                            </section>
+
+                            {/* Custom Order Sizes */}
+                            <section>
+                                <h3 className="text-lg font-bold text-navy mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+                                    <Ruler className="w-5 h-5 text-pink" /> Custom Order Sizes
+                                </h3>
+                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                                    <FieldArray name="customOrder.sizes">
+                                        {({ push, remove }) => (
+                                            <div>
+                                                <div className="flex flex-wrap gap-3 mb-4">
+                                                    {(values.customOrder?.sizes || []).map((size: string, index: number) => (
+                                                        <div key={index} className="flex items-center bg-white border border-gray-200 rounded-lg pl-3 pr-2 py-1.5 shadow-sm">
+                                                            <Field name={`customOrder.sizes.${index}`} className="bg-transparent border-none focus:ring-0 text-sm w-44 outline-none" />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => remove(index)}
+                                                                className="ml-2 text-gray-400 hover:text-red-500 transition-colors"
+                                                            >
+                                                                <Trash2 className="w-3 h-3" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => push("New Size")}
+                                                >
+                                                    <Plus className="w-4 h-4 mr-2" /> Add Size
                                                 </Button>
                                             </div>
                                         )}
