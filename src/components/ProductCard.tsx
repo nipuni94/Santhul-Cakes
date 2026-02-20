@@ -48,8 +48,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     </span>
                 )}
 
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-navy/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Hover overlay with Quick View */}
+                <div className="absolute inset-0 bg-gradient-to-t from-navy/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="bg-white/90 backdrop-blur-sm text-navy text-xs font-semibold px-4 py-1.5 rounded-full shadow-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                        Quick View
+                    </span>
+                </div>
             </Link>
 
             <div className="p-5 flex flex-col flex-grow">

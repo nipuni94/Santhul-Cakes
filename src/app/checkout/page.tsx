@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
 import { CheckCircle, CreditCard, Download, Home, Calendar, Tag } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const MIN_DAYS_AHEAD = 5;
 const minDate = new Date();
@@ -231,8 +232,11 @@ export default function CheckoutPage() {
                             {items.map((item) => (
                                 <div key={item.cartId} className="flex gap-4 items-center">
                                     <div className="relative w-14 h-14 bg-feather rounded-xl overflow-hidden shrink-0 border border-gray-100">
-                                        {/* Added Image support here just in case, though original had div */}
-                                        <div className="w-full h-full bg-feather" />
+                                        {item.image_url ? (
+                                            <Image src={item.image_url} alt={item.name} fill className="object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-feather" />
+                                        )}
                                     </div>
                                     <div className="flex-grow min-w-0">
                                         <h4 className="font-semibold text-sm text-navy truncate">{item.name}</h4>

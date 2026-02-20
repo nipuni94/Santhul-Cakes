@@ -3,6 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/Button";
 import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
+import { motion } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -19,7 +20,12 @@ export default function ContactPage() {
         <div className="min-h-screen">
             {/* Header */}
             <section className="bg-white border-b border-gray-100 pt-28 pb-12">
-                <div className="container mx-auto px-6 text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="container mx-auto px-6 text-center"
+                >
                     <span className="text-pink font-semibold text-sm tracking-widest uppercase">
                         Reach Out
                     </span>
@@ -30,7 +36,7 @@ export default function ContactPage() {
                     <p className="text-muted max-w-lg mx-auto">
                         Have a question or a special request? We&apos;d love to hear from you.
                     </p>
-                </div>
+                </motion.div>
             </section>
 
             {/* Content */}
@@ -38,7 +44,13 @@ export default function ContactPage() {
                 <div className="container mx-auto px-6">
                     <div className="grid lg:grid-cols-5 gap-10 max-w-6xl mx-auto">
                         {/* Contact Info */}
-                        <div className="lg:col-span-2 bg-navy rounded-3xl p-8 text-white shadow-xl">
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                            className="lg:col-span-2 bg-navy rounded-3xl p-8 text-white shadow-xl"
+                        >
                             <h2 className="text-2xl font-serif !text-white mb-8">Contact Information</h2>
 
                             <div className="space-y-8">
@@ -80,10 +92,16 @@ export default function ContactPage() {
 
 
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Form */}
-                        <div className="lg:col-span-3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            className="lg:col-span-3 bg-white p-8 rounded-3xl shadow-sm border border-gray-100"
+                        >
                             <h2 className="text-2xl font-serif text-navy mb-6">Send a Message</h2>
                             <Formik
                                 initialValues={{ name: "", phone: "", subject: "", message: "" }}
@@ -145,7 +163,7 @@ export default function ContactPage() {
                                     </Form>
                                 )}
                             </Formik>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </section>

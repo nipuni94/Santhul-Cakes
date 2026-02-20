@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useStore } from "@/context/StoreContext";
 import { Product } from "@/types";
 import { Button } from "@/components/ui/Button";
-import { Plus, Edit2, Trash2, Image as ImageIcon, Star, StarOff, X, Copy } from "lucide-react";
+import { Plus, Edit2, Trash2, Image as ImageIcon, Star, StarOff, X, Copy, Images } from "lucide-react";
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";
@@ -33,9 +33,19 @@ const productSchema = Yup.object().shape({
 });
 
 export default function AdminProductsPage() {
-    const { products, addProduct, updateProduct, deleteProduct, categories } = useStore();
+    const { products, addProduct, updateProduct, deleteProduct, categories, settings, updateSettings } = useStore();
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+    const [libraryPickerCallback, setLibraryPickerCallback] = useState<((url: string) => void) | null>(null);
+
+    const imageLibrary: string[] = settings?.imageLibrary || [];
+
+    const addToLibrary = (url: string) => {
+        if (!imageLibrary.includes(url)) {
+            updateSettings({ imageLibrary: [...imageLibrary, url] });
+        }
+    };
 
     const handleSubmit = (values: any, { resetForm }: any) => {
         const primaryCategory = values.categories[0];
@@ -232,10 +242,10 @@ export default function AdminProductsPage() {
                                                     )}
                                                 </div>
                                             ))}
-                                            {/* Add Image Button */}
+                                            {/* Upload New Image */}
                                             <label className="w-20 h-20 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-pink hover:bg-pink-50 transition-colors">
                                                 <Upload className="w-5 h-5 text-gray-400" />
-                                                <span className="text-[9px] text-gray-400 mt-1">Add</span>
+                                                <span className="text-[9px] text-gray-400 mt-1">Upload</span>
                                                 <input
                                                     type="file"
                                                     accept="image/*"
@@ -251,6 +261,7 @@ export default function AdminProductsPage() {
                                                                 const currentUrls = values.image_urls || [];
                                                                 setFieldValue('image_urls', [...currentUrls, url]);
                                                                 if (currentUrls.length === 0) setFieldValue('image_url', url);
+                                                                addToLibrary(url);
                                                                 toast.dismiss(toastId);
                                                                 toast.success("Image uploaded!");
                                                             } catch (error) {
@@ -261,8 +272,26 @@ export default function AdminProductsPage() {
                                                     }}
                                                 />
                                             </label>
+                                            {/* Choose from Library */}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setLibraryPickerCallback(() => (url: string) => {
+                                                        const currentUrls = values.image_urls || [];
+                                                        if (!currentUrls.includes(url)) {
+                                                            setFieldValue('image_urls', [...currentUrls, url]);
+                                                            if (currentUrls.length === 0) setFieldValue('image_url', url);
+                                                        }
+                                                    });
+                                                    setIsLibraryOpen(true);
+                                                }}
+                                                className="w-20 h-20 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center hover:border-pink hover:bg-pink-50 transition-colors"
+                                            >
+                                                <Images className="w-5 h-5 text-gray-400" />
+                                                <span className="text-[9px] text-gray-400 mt-1">Library</span>
+                                            </button>
                                         </div>
-                                        <p className="text-[10px] text-muted">First image is used as the main product image. Click × to remove.</p>
+                                        <p className="text-[10px] text-muted">First image is main. Click × to remove. Use Library to reuse previously uploaded images.</p>
                                         <Field name="image_url" type="hidden" />
                                     </div>
 
@@ -372,6 +401,65 @@ export default function AdminProductsPage() {
                                 </Form>
                             )}
                         </Formik>
+                    </div>
+                </div>
+            )}
+
+            {/* Image Library Picker Modal */}
+            {isLibraryOpen && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-xl p-6 shadow-2xl max-h-[80vh] flex flex-col">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-bold text-navy flex items-center gap-2">
+                                <Images className="w-5 h-5 text-pink" /> Image Library
+                            </h2>
+                            <button
+                                onClick={() => { setIsLibraryOpen(false); setLibraryPickerCallback(null); }}
+                                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                                <X className="w-5 h-5 text-gray-400" />
+                            </button>
+                        </div>
+
+                        {imageLibrary.length === 0 ? (
+                            <div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
+                                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                    <ImageIcon className="w-8 h-8 text-gray-300" />
+                                </div>
+                                <p className="text-sm text-muted mb-1">No images in library yet</p>
+                                <p className="text-[10px] text-gray-400">Upload images when creating products to build your library.</p>
+                            </div>
+                        ) : (
+                            <div className="flex-1 overflow-y-auto">
+                                <div className="grid grid-cols-4 gap-3">
+                                    {imageLibrary.map((url, index) => (
+                                        <button
+                                            key={index}
+                                            type="button"
+                                            onClick={() => {
+                                                if (libraryPickerCallback) {
+                                                    libraryPickerCallback(url);
+                                                    toast.success("Image added from library");
+                                                }
+                                                setIsLibraryOpen(false);
+                                                setLibraryPickerCallback(null);
+                                            }}
+                                            className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden border-2 border-gray-200 hover:border-pink hover:shadow-md hover:shadow-pink/10 transition-all group"
+                                        >
+                                            <Image src={url} alt={`Library ${index + 1}`} fill className="object-cover" />
+                                            <div className="absolute inset-0 bg-pink/0 group-hover:bg-pink/10 transition-colors flex items-center justify-center">
+                                                <Plus className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                            <p className="text-[10px] text-muted">{imageLibrary.length} image{imageLibrary.length !== 1 ? "s" : ""} in library</p>
+                            <Button variant="ghost" size="sm" onClick={() => { setIsLibraryOpen(false); setLibraryPickerCallback(null); }}>Close</Button>
+                        </div>
                     </div>
                 </div>
             )}

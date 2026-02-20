@@ -84,17 +84,24 @@ export const Header = () => {
 
                     {/* Actions */}
                     <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => setIsCartOpen(true)}
-                            className="relative p-2.5 rounded-full text-navy hover:bg-pink-light hover:text-pink transition-all duration-300 cursor-pointer"
+                        <motion.div
+                            key={cartCount}
+                            initial={{ scale: 1 }}
+                            animate={{ scale: [1, 1.25, 1] }}
+                            transition={{ duration: 0.3 }}
                         >
-                            <ShoppingCart className="w-5 h-5" />
-                            {cartCount > 0 && (
-                                <span className="absolute top-0 right-0 min-w-[18px] h-[18px] bg-pink text-white text-[10px] font-bold flex items-center justify-center rounded-full shadow-sm shadow-pink/30 animate-pulse">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </button>
+                            <button
+                                onClick={() => setIsCartOpen(true)}
+                                className="relative p-2.5 rounded-full text-navy hover:bg-pink-light hover:text-pink transition-all duration-300 cursor-pointer"
+                            >
+                                <ShoppingCart className="w-5 h-5" />
+                                {cartCount > 0 && (
+                                    <span className="absolute top-0 right-0 min-w-[18px] h-[18px] bg-pink text-white text-[10px] font-bold flex items-center justify-center rounded-full shadow-sm shadow-pink/30">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </button>
+                        </motion.div>
 
                         {/* Mobile Menu Toggle */}
                         <button
