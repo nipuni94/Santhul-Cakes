@@ -34,7 +34,7 @@ const greatVibes = Great_Vibes({
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://santhul-cakes.netlify.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://santhulcakes.com"),
   title: {
     default: "Santhul Cake House | Premium Homemade Cakes",
     template: "%s | Santhul Cake House"
@@ -55,10 +55,10 @@ export const metadata: Metadata = {
     siteName: "Santhul Cake House",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_APP_URL || "https://santhul-cakes.netlify.app"}/logo.png`,
+        url: `${process.env.NEXT_PUBLIC_APP_URL || "https://santhulcakes.com"}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "Santhul Cake House Logo",
+        alt: "Santhul Cake House - Premium Homemade Cakes",
       },
     ],
   },
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Santhul Cake House",
     description: "Premium homemade cakes crafted with love. Order online.",
-    images: [`${process.env.NEXT_PUBLIC_APP_URL || "https://santhul-cakes.netlify.app"}/logo.png`],
+    images: [`${process.env.NEXT_PUBLIC_APP_URL || "https://santhulcakes.com"}/og-image.png`],
   },
   icons: {
     icon: "/favicon.png",
