@@ -35,6 +35,7 @@ export default function CheckoutPage() {
     const { addOrder, settings } = useStore();
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
     const [orderTotal, setOrderTotal] = useState(0);
+    const [confirmedOrderId, setConfirmedOrderId] = useState<string | null>(null);
     const [promoCode, setPromoCode] = useState("");
 
     const handleApplyCoupon = async () => {
@@ -45,7 +46,7 @@ export default function CheckoutPage() {
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
         try {
-            await addOrder({
+            const newOrder = await addOrder({
                 customer_name: values.fullName,
                 customer_phone: values.whatsapp,
                 shipping_address: values.address,
@@ -60,6 +61,9 @@ export default function CheckoutPage() {
 
             console.log("Order placed:", { ...values, items, total: cartTotal });
             setOrderTotal(cartTotal);
+            if (newOrder && newOrder.id) {
+                setConfirmedOrderId(String(newOrder.id));
+            }
             setIsOrderPlaced(true);
             clearCart();
             toast.success("Order placed successfully!");
@@ -72,6 +76,7 @@ export default function CheckoutPage() {
     };
 
     if (isOrderPlaced) {
+        const advanceAmount = orderTotal / 2;
         return (
             <div className="min-h-screen flex items-center justify-center bg-feather py-20">
                 <div className="max-w-lg w-full mx-4">
@@ -80,20 +85,41 @@ export default function CheckoutPage() {
                             <CheckCircle className="w-10 h-10 text-green-500" />
                         </div>
                         <h1 className="text-3xl font-serif text-navy mb-2">Order Confirmed!</h1>
+                        {confirmedOrderId && (
+                            <div className="mb-4 inline-block bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
+                                <span className="text-sm text-muted uppercase tracking-wider font-semibold">Order Number</span>
+                                <div className="text-xl font-mono text-navy font-bold mt-1">{confirmedOrderId}</div>
+                            </div>
+                        )}
                         <p className="text-muted mb-8">Your order has been placed successfully.</p>
 
-                        <div className="text-left bg-feather p-6 rounded-2xl mb-8">
+                        <div className="text-left bg-feather p-6 rounded-2xl mb-8 border border-pink/20 relative overflow-hidden">
+                            {/* Decorative element */}
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-pink/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+                            
                             <h3 className="font-serif font-bold text-navy mb-4 flex items-center gap-2">
-                                <CreditCard className="w-4 h-4 text-pink" /> Payment Instructions
+                                <CreditCard className="w-5 h-5 text-pink" /> Next Step: Advance Payment
                             </h3>
-                            <p className="text-sm text-muted mb-4">
-                                Please deposit <strong className="text-navy">Rs. {orderTotal.toLocaleString()}</strong> to the account below and send the receipt via WhatsApp.
-                            </p>
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between"><span className="text-muted">Bank</span><span className="font-medium text-navy">{settings?.bankDetails?.bank || "Contact Store"}</span></div>
-                                <div className="flex justify-between"><span className="text-muted">Account Name</span><span className="font-medium text-navy">{settings?.bankDetails?.accountName || "-"}</span></div>
-                                <div className="flex justify-between"><span className="text-muted">Account No</span><span className="font-medium text-navy">{settings?.bankDetails?.accountNumber || "-"}</span></div>
-                                <div className="flex justify-between"><span className="text-muted">Branch</span><span className="font-medium text-navy">{settings?.bankDetails?.branch || "-"}</span></div>
+                            <div className="bg-white/60 p-4 rounded-xl mb-5 space-y-3 text-sm text-navy text-center">
+                                <p className="leading-relaxed">
+                                    To begin processing your order, please deposit <strong className="text-pink font-bold text-lg text-nowrap">Rs. {advanceAmount.toLocaleString()}</strong> (50% advance payment) to the below bank details and Whatsapp the payment receipt to <strong className="text-navy">{settings?.socialLinks?.whatsapp || settings?.phone || "our WhatsApp"}</strong>.
+                                </p>
+                                <p className="text-muted text-xs">
+                                    The remaining 50% can be paid upon delivery or pickup.
+                                </p>
+                                <p className="font-medium bg-amber-50 text-amber-800 p-2 rounded border border-amber-100 text-xs">
+                                    <strong>Important:</strong> Please include your Order Number ({confirmedOrderId}) as the payment reference.
+                                </p>
+                            </div>
+                            
+                            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                                <p className="text-xs text-muted uppercase font-bold tracking-wider mb-3 pl-1">Bank Details</p>
+                                <div className="space-y-2.5 text-sm">
+                                    <div className="flex justify-between items-center"><span className="text-muted">Bank</span><span className="font-bold text-navy">{settings?.bankDetails?.bank || "Contact Store"}</span></div>
+                                    <div className="flex justify-between items-center border-t border-gray-50 pt-2"><span className="text-muted">Account Name</span><span className="font-bold text-navy text-right">{settings?.bankDetails?.accountName || "-"}</span></div>
+                                    <div className="flex justify-between items-center border-t border-gray-50 pt-2"><span className="text-muted">Account No</span><span className="font-mono font-bold text-navy bg-gray-50 px-2 py-0.5 rounded">{settings?.bankDetails?.accountNumber || "-"}</span></div>
+                                    <div className="flex justify-between items-center border-t border-gray-50 pt-2"><span className="text-muted">Branch</span><span className="font-medium text-navy">{settings?.bankDetails?.branch || "-"}</span></div>
+                                </div>
                             </div>
                         </div>
 

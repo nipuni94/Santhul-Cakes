@@ -89,6 +89,9 @@ function ShopContent() {
 
     // Filter Logic
     const filteredProducts = products.filter((p) => {
+        // Published status
+        if (p.is_published === false) return false;
+
         // Search
         const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
 

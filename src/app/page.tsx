@@ -10,7 +10,7 @@ import { ProductCard } from "@/components/ProductCard";
 
 export default function Home() {
   const { products, settings } = useStore();
-  const featuredProducts = products.filter((p) => p.is_featured).slice(0, 8); // Take top 8 for 2 rows of 4
+  const featuredProducts = products.filter((p) => p.is_featured && p.is_published !== false).slice(0, 8); // Take top 8 for 2 rows of 4
 
   return (
     <div className="flex flex-col">
@@ -41,7 +41,7 @@ export default function Home() {
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif text-navy leading-[1.1]">
               Baked with{" "}
-              <span className="text-gradient font-script text-6xl md:text-7xl lg:text-8xl">
+              <span className="text-gradient font-script text-6xl md:text-7xl lg:text-8xl pr-4 -mr-4">
                 Love
               </span>
               ,<br />

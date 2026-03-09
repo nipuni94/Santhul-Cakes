@@ -30,6 +30,7 @@ const productSchema = Yup.object().shape({
             price: Yup.number().min(0, "Must be non-negative"),
         })
     ),
+    is_published: Yup.boolean(),
 });
 
 export default function AdminProductsPage() {
@@ -56,6 +57,7 @@ export default function AdminProductsPage() {
             image_url: imageUrls[0] || values.image_url || "",
             image_urls: imageUrls,
             is_featured: values.is_featured,
+            is_published: values.is_published,
         };
 
         if (editingProduct) {
@@ -83,14 +85,19 @@ export default function AdminProductsPage() {
         updateProduct(product.id, { is_featured: !product.is_featured });
     };
 
+    const togglePublished = (product: Product) => {
+        updateProduct(product.id, { is_published: product.is_published === false ? true : false });
+    };
+
     const handleDuplicate = (product: Product) => {
         const { id, ...data } = product;
         addProduct({
             ...data,
             name: `${data.name} (Copy)`,
             image_url: data.image_url || "", // Ensure it's not undefined
+            is_published: false, // Duplicates default to draft
         });
-        toast.success("Product duplicated");
+        toast.success("Product duplicated as draft");
     };
 
     return (
@@ -110,6 +117,7 @@ export default function AdminProductsPage() {
                             <th className="p-4">Name</th>
                             <th className="p-4">Categories</th>
                             <th className="p-4">Price / Variants</th>
+                            <th className="p-4 text-center">Status</th>
                             <th className="p-4 text-center">Featured</th>
                             <th className="p-4 text-right">Actions</th>
                         </tr>
@@ -162,6 +170,15 @@ export default function AdminProductsPage() {
                                 </td>
                                 <td className="p-4 text-center">
                                     <button
+                                        onClick={() => togglePublished(product)}
+                                        className={cn("px-2.5 py-1 text-xs font-semibold rounded-full transition-colors border", product.is_published !== false ? "bg-green-50 text-green-700 border-green-200 hover:bg-green-100" : "bg-gray-100 text-muted border-gray-200 hover:bg-gray-200")}
+                                        title="Toggle Published Status"
+                                    >
+                                        {product.is_published !== false ? "Published" : "Draft"}
+                                    </button>
+                                </td>
+                                <td className="p-4 text-center">
+                                    <button
                                         onClick={() => toggleFeatured(product)}
                                         className={cn("p-1.5 rounded-full transition-colors", product.is_featured ? "text-yellow-500 bg-yellow-50 hover:bg-yellow-100" : "text-gray-300 hover:text-gray-400")}
                                         title="Toggle Featured"
@@ -205,6 +222,7 @@ export default function AdminProductsPage() {
                                 variants: editingProduct?.variants || [],
                                 flavors: editingProduct?.flavors || [],
                                 is_featured: editingProduct?.is_featured || false,
+                                is_published: editingProduct?.is_published ?? true,
                                 image_url: editingProduct?.image_url || "",
                                 image_urls: editingProduct?.image_urls || (editingProduct?.image_url ? [editingProduct.image_url] : []),
                             }}
@@ -389,9 +407,15 @@ export default function AdminProductsPage() {
                                         <ErrorMessage name="description" component="div" className="text-red-500 text-xs mt-1" />
                                     </div>
 
-                                    <div className="flex items-center gap-2 pt-2">
-                                        <Field type="checkbox" name="is_featured" className="w-4 h-4 text-pink rounded border-gray-300 focus:ring-pink" />
-                                        <label className="text-sm text-navy font-medium">Feature this product on Home page</label>
+                                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                                        <div className="flex items-center gap-2">
+                                            <Field type="checkbox" name="is_published" className="w-4 h-4 text-pink rounded border-gray-300 focus:ring-pink" />
+                                            <label className="text-sm text-navy font-medium">Published (Visible to customers)</label>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Field type="checkbox" name="is_featured" className="w-4 h-4 text-pink rounded border-gray-300 focus:ring-pink" />
+                                            <label className="text-sm text-navy font-medium">Feature on Home page</label>
+                                        </div>
                                     </div>
 
                                     <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">

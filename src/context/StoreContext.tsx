@@ -42,7 +42,7 @@ interface StoreContextType {
     addCategory: (category: Omit<Category, "id">) => Promise<void>;
     deleteCategory: (id: string) => Promise<void>;
 
-    addOrder: (order: Omit<Order, "id" | "date">) => Promise<void>;
+    addOrder: (order: Omit<Order, "id" | "date">) => Promise<Order>;
     updateOrderStatus: (id: string | number, status: Order["status"]) => Promise<void>;
     deleteOrder: (id: string | number) => Promise<void>;
 
@@ -166,8 +166,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Order Actions
     const addOrder = async (orderData: Omit<Order, "id" | "date">) => {
-        await createOrder(orderData);
+        const newOrder = await createOrder(orderData);
         await refreshStore();
+        return newOrder;
     };
 
     const updateOrderStatus = async (id: string | number, status: Order["status"]) => {

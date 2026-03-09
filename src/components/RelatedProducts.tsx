@@ -17,9 +17,9 @@ export const RelatedProducts = ({ currentProduct, maxItems = 4 }: RelatedProduct
 
     const currentCats = currentProduct.categories || [currentProduct.category];
 
-    // Find related products: same categories, excluding current
+    // Find related products: same categories, excluding current, and must be published
     const related = products
-        .filter(p => p.id !== currentProduct.id)
+        .filter(p => p.id !== currentProduct.id && p.is_published !== false)
         .map(p => {
             // Score based on shared categories
             const productCats = p.categories || [p.category];

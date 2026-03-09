@@ -40,9 +40,12 @@ export const metadata: Metadata = {
     template: "%s | Santhul Cake House"
   },
   description: "Premium homemade cakes crafted with love in Sri Lanka. Custom designs, premium ingredients, zero preservatives. Order chocolate, vanilla, and fruit cakes online.",
-  keywords: ["cakes", "homemade cakes", "sri lanka cakes", "birthday cakes", "wedding cakes", "santhul cakes", "chocolate cake", "custom cakes"],
+  keywords: ["cakes", "homemade cakes", "sri lanka cakes", "birthday cakes", "wedding cakes", "santhul cakes", "chocolate cake", "custom cakes", "cake store in Panadura", "Panadura cakeshop", "cakes in Panadura", "best cake shop Panadura"],
   authors: [{ name: "Santhul Cake House" }],
   creator: "Santhul Cake House",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -86,6 +89,25 @@ export default function RootLayout({
       <body
         className={`${playfair.variable} ${montserrat.variable} ${greatVibes.variable} antialiased flex flex-col min-h-screen`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+             __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FoodEstablishment",
+              "name": "Santhul Cake House",
+              "image": "https://santhul-cakes.netlify.app/logo.png",
+              "url": "https://santhul-cakes.netlify.app",
+              "description": "Premium homemade cakes crafted with love in Sri Lanka. Custom designs, premium ingredients, zero preservatives.",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Panadura",
+                "addressCountry": "LK"
+              },
+              "priceRange": "$$",
+             })
+          }}
+        />
         <NextTopLoader color="#E91E63" showSpinner={false} />
         <StoreProvider>
           <CartProvider>

@@ -20,6 +20,7 @@ export interface Product {
     image_url: string;
     image_urls?: string[]; // Multiple images support
     is_featured: boolean;
+    is_published?: boolean; // Draft vs Published status
 }
 
 export interface Category {

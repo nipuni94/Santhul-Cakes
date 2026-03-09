@@ -30,7 +30,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 {product.image_url ? (
                     <Image
                         src={product.image_url}
-                        alt={product.name}
+                        alt={`${product.name} - Santhul Cake House`}
                         fill
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     />
