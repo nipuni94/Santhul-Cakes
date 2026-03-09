@@ -55,9 +55,9 @@ export const metadata: Metadata = {
     siteName: "Santhul Cake House",
     images: [
       {
-        url: "/logo.png",
-        width: 800,
-        height: 600,
+        url: `${process.env.NEXT_PUBLIC_APP_URL || "https://santhul-cakes.netlify.app"}/logo.png`,
+        width: 1200,
+        height: 630,
         alt: "Santhul Cake House Logo",
       },
     ],
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Santhul Cake House",
     description: "Premium homemade cakes crafted with love. Order online.",
-    images: ["/logo.png"],
+    images: [`${process.env.NEXT_PUBLIC_APP_URL || "https://santhul-cakes.netlify.app"}/logo.png`],
   },
   icons: {
     icon: "/favicon.png",
